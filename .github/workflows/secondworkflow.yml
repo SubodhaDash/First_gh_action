@@ -2,9 +2,24 @@ name: Output Workflow
 on:
   issues:
     types: [opened, edited]
+  workflow_dispatch:
 jobs:
     output_github_context:
         runs-on: ubuntu-latest
         steps:
-            - name: Output Github context
-              run: echo "${{ toJSON(github) }}"
+          - name: Show event name
+            run: echo "This workflow was triggered by :${{ github.event_name }}"
+
+          - name: Show issue action
+            if: github.event_name == 'issues'
+            run: |
+              echo "Issue number is :${{ github.event.issue.number }}"
+              echo "Issue title is :${{ github.event.issue.title }}"
+              
+          - name: Show workflow dispatch inputs
+            if: github.event_name == 'workflow_dispatch'
+            run: |
+              echo "Input parameters are :${{ toJSON(github.event.inputs) }}"
+    
+          - name: Output Github context
+            run: echo "${{ toJSON(github.event) }}"
